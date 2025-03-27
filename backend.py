@@ -20,7 +20,7 @@ def download_track(url):
         logging.info(f"Начинаем скачивание трека по URL: {url}")
         
         # Формируем команду spotdl
-        command = f"spotdl --bitrate 320k download {url}"
+        command = f"yt-dlp {url}"
         logging.debug(f"Выполняем команду: {command}")
         
         # Устанавливаем временную директорию для скачивания файлов
