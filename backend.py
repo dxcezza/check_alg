@@ -26,7 +26,6 @@ def download_track(url):
         # Устанавливаем временную директорию для скачивания файлов
         download_dir = os.getenv("DOWNLOAD_DIR", "/tmp/downloads")
         os.makedirs(download_dir, exist_ok=True)
-        command += f" --output {download_dir}"
         
         # Запускаем процесс с перехватом stdout и stderr
         with subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as process:
