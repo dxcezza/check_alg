@@ -19,9 +19,14 @@ def download_track(url):
     try:
         logging.info(f"Начинаем скачивание трека по URL: {url}")
         
+        # Проверка корректности URL
+        if not url.startswith("https://open.spotify.com/"):
+            logging.error("Некорректный URL.")
+            return {"status": "error", "message": "Invalid URL."}
+        
         # Получаем настройки прокси из переменных окружения
-        http_proxy = 'http://127.0.0.1:8080'
-        https_proxy = 'http://127.0.0.1:8080'
+        http_proxy = os.getenv("HTTP_PROXY")
+        https_proxy = os.getenv("HTTPS_PROXY")
         
         if not http_proxy or not https_proxy:
             logging.warning("Прокси не настроен. Используется прямое соединение.")
@@ -59,36 +64,3 @@ def download_track(url):
         # Проверяем код завершения процесса
         if process.returncode == 0:
             logging.info("Скачивание завершено успешно!")
-            return {"status": "success", "message": "Track downloaded successfully.", "output": output}
-        else:
-            logging.error(f"Процесс завершился с кодом ошибки: {process.returncode}")
-            return {"status": "error", "message": f"Process exited with code {process.returncode}"}
-    
-    except FileNotFoundError:
-        logging.error("Ошибка: spotdl не найден. Убедитесь, что он установлен.")
-        return {"status": "error", "message": "spotdl not found."}
-    except Exception as e:
-        logging.error(f"Произошла непредвиденная ошибка: {e}")
-        return {"status": "error", "message": str(e)}
-
-@app.route('/download', methods=['POST'])
-def download():
-    # Получаем URL из JSON-запроса
-    data = request.get_json()
-    url = data.get("url")
-    
-    if not url:
-        logging.warning("URL не был передан в запросе.")
-        return jsonify({"status": "error", "message": "URL is required."}), 400
-    
-    logging.info(f"Получен запрос на скачивание трека с URL: {url}")
-    
-    # Запускаем процесс скачивания
-    result = download_track(url)
-    
-    # Возвращаем результат клиенту
-    return jsonify(result)
-
-if __name__ == "__main__":
-    logging.info("Запуск бэкенда...")
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
