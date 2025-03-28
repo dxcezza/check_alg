@@ -19,33 +19,26 @@ def download_track(url):
     try:
         logging.info(f"Начинаем скачивание трека по URL: {url}")
         
-        # Проверка корректности URL
-        if not url.startswith("https://open.spotify.com/"):
-            logging.error("Некорректный URL.")
-            return {"status": "error", "message": "Invalid URL."}
+        # Получаем настройки SOCKS5-прокси из переменных окружения
+        socks_proxy = os.getenv("SOCKS5_PROXY")
+        if not socks_proxy:
+            logging.warning("SOCKS5-прокси не настроен. Используется прямое соединение.")
         
-        # Получаем настройки прокси из переменных окружения
-        http_proxy = "http://127.0.0.1:8080"
-        https_proxy = "http://127.0.0.1:8080"
-        
-        if not http_proxy or not https_proxy:
-            logging.warning("Прокси не настроен. Используется прямое соединение.")
-        
-        # Формируем команду spotdl с учетом прокси
-        proxy_args = f"--proxy {http_proxy}" if http_proxy else ""
+        # Формируем команду spotdl
+        proxy_args = f"--proxy {socks_proxy}" if socks_proxy else ""
         command = f"spotdl {url} {proxy_args}"
         logging.debug(f"Выполняем команду: {command}")
         
         # Устанавливаем временную директорию для скачивания файлов
         download_dir = os.getenv("DOWNLOAD_DIR", "/tmp/downloads")
         os.makedirs(download_dir, exist_ok=True)
-
+        
+        # Запускаем процесс с перехватом stdout и stderr
         env = os.environ.copy()
-        if http_proxy:
-            env["HTTP_PROXY"] = http_proxy
-        if https_proxy:
-            env["HTTPS_PROXY"] = https_proxy
-
+        if socks_proxy:
+            env["HTTP_PROXY"] = socks_proxy
+            env["HTTPS_PROXY"] = socks_proxy
+        
         with subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env) as process:
             output = []
             
