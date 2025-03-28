@@ -19,8 +19,16 @@ def download_track(url):
     try:
         logging.info(f"Начинаем скачивание трека по URL: {url}")
         
-        # Формируем команду spotdl
-        command = f"yt-dlp {url}"
+        # Получаем настройки прокси из переменных окружения
+        http_proxy = os.getenv("HTTP_PROXY")
+        https_proxy = os.getenv("HTTPS_PROXY")
+        
+        if not http_proxy or not https_proxy:
+            logging.warning("Прокси не настроен. Используется прямое соединение.")
+        
+        # Формируем команду spotdl с учетом прокси
+        proxy_args = f"--proxy {http_proxy}" if http_proxy else ""
+        command = f"spotdl {url} {proxy_args}"
         logging.debug(f"Выполняем команду: {command}")
         
         # Устанавливаем временную директорию для скачивания файлов
@@ -28,7 +36,13 @@ def download_track(url):
         os.makedirs(download_dir, exist_ok=True)
         
         # Запускаем процесс с перехватом stdout и stderr
-        with subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as process:
+        env = os.environ.copy()
+        if http_proxy:
+            env["HTTP_PROXY"] = http_proxy
+        if https_proxy:
+            env["HTTPS_PROXY"] = https_proxy
+        
+        with subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env) as process:
             output = []
             
             # Выводим stdout в реальном времени
