@@ -39,7 +39,12 @@ def download_track(url):
         # Устанавливаем временную директорию для скачивания файлов
         download_dir = os.getenv("DOWNLOAD_DIR", "/tmp/downloads")
         os.makedirs(download_dir, exist_ok=True)
-        
+
+        env = os.environ.copy()
+        if http_proxy:
+            env["HTTP_PROXY"] = http_proxy
+        if https_proxy:
+            env["HTTPS_PROXY"] = https_proxy
 
         with subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env) as process:
             output = []
