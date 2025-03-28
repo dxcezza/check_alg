@@ -25,8 +25,8 @@ def download_track(url):
             return {"status": "error", "message": "Invalid URL."}
         
         # Получаем настройки прокси из переменных окружения
-        http_proxy = os.getenv("HTTP_PROXY")
-        https_proxy = os.getenv("HTTPS_PROXY")
+        http_proxy = "http://127.0.0.1:8080"
+        https_proxy = "http://127.0.0.1:8080"
         
         if not http_proxy or not https_proxy:
             logging.warning("Прокси не настроен. Используется прямое соединение.")
@@ -40,13 +40,7 @@ def download_track(url):
         download_dir = os.getenv("DOWNLOAD_DIR", "/tmp/downloads")
         os.makedirs(download_dir, exist_ok=True)
         
-        # Запускаем процесс с перехватом stdout и stderr
-        env = os.environ.copy()
-        if http_proxy:
-            env["HTTP_PROXY"] = http_proxy
-        if https_proxy:
-            env["HTTPS_PROXY"] = https_proxy
-        
+
         with subprocess.Popen(command, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env) as process:
             output = []
             
