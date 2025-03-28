@@ -20,8 +20,8 @@ def download_track(url):
         logging.info(f"Начинаем скачивание трека по URL: {url}")
         
         # Получаем настройки прокси из переменных окружения
-        http_proxy = os.getenv("HTTP_PROXY")
-        https_proxy = os.getenv("HTTPS_PROXY")
+        http_proxy = 'http://127.0.0.1:8080'
+        https_proxy = 'http://127.0.0.1:8080'
         
         if not http_proxy or not https_proxy:
             logging.warning("Прокси не настроен. Используется прямое соединение.")
