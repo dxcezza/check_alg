@@ -1,5 +1,5 @@
 flask==3.0.0
 ffmpeg-python==0.2.0
 spotdl==4.2.3
-yt-dlp==2023.11.16
+yt-dlp==2023.02.17
 PySocks==1.7.1
