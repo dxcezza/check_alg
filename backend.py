@@ -16,5 +16,5 @@ def send_download_request(video_url):
 
 # Пример использования
 if __name__ == "__main__":
-    youtube_url = input("Введите URL видео с YouTube: ")
+    youtube_url = 'https://www.youtube.com/watch?v=BYT30bf0YN8'
     send_download_request(youtube_url)
