@@ -1,36 +1,20 @@
-import os
+import requests
 
-def download_track_from_spotify(track_url, output_directory="."):
-    """
-    Скачивает трек из Spotify с использованием spotdl.
+def send_download_request(video_url):
+    # URL вашего локального сервера (через Tuna)
+    local_server_url = "https://aestci-85-198-105-37.ru.tuna.am/download"
 
-    :param track_url: URL трека на Spotify.
-    :param output_directory: Директория для сохранения трека.
-    """
-    # Проверяем, существует ли указанная директория
-    if not os.path.exists(output_directory):
-        os.makedirs(output_directory)
+    # Отправляем POST-запрос на локальный сервер
+    payload = {"url": video_url}
+    response = requests.post(local_server_url, json=payload)
 
-    # Формируем команду для spotdl
-    command = f"spotdl --bitrate disable {track_url} --output {output_directory}"
-
-    # Выполняем команду в CLI
-    print(f"Выполняется команда: {command}")
-    result = os.system(command)
-
-    # Проверяем результат выполнения команды
-    if result == 0:
-        print("Трек успешно скачан!")
+    if response.status_code == 200:
+        result = response.json()
+        print(result["message"])
     else:
-        print("Произошла ошибка при скачивании трека.")
+        print(f"Ошибка: {response.text}")
 
 # Пример использования
 if __name__ == "__main__":
-    # URL трека на Spotify
-    spotify_track_url = "https://open.spotify.com/track/5AMaSh2CGFCGC8wRGSQlJA"
-
-    # Директория для сохранения трека
-    output_dir = "./downloads"
-
-    # Скачиваем трек
-    download_track_from_spotify(spotify_track_url, output_dir)
+    youtube_url = "https://www.youtube.com/watch?v=uQj99W1Ul9U"
+    send_download_request(youtube_url)
